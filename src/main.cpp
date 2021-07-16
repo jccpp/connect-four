@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -13,6 +14,9 @@ void printPlayer(const int);
  */
 template <size_t rows, size_t cols>
 void printBoard(const int (&)[rows][cols]);
+
+template <int rows, int cols>
+bool isWinner(const int, const int, const int, const int (&)[rows][cols]);
 
 /**
  * Lee el número de la fila, donde el jugador de turno
@@ -44,6 +48,7 @@ int main(int argc, char *argv[]) {
 
     int player = 0;
     int turns = 1; // Para controlar la cantidad la cantidad de turnos.
+    int winner = false;
     int board[6][7];
     int colsTop[7] = {5, 5, 5, 5, 5, 5, 5};
     for (auto &rows : board) {
@@ -57,16 +62,23 @@ int main(int argc, char *argv[]) {
         printPlayer(player);
         printBoard(board);
         readColumn(player, col, colsTop);
-
-        board[colsTop[col]--][col] = player;
+        board[colsTop[col]][col] = player;
 
         // TODO: Verificar si hay ganador y finalizar el juego.
+        if ((winner = isWinner(player, colsTop[col], col, board))) {
+            std::cout << "  ¡¡¡Ganador!!!" << std::endl;
+            break;
+        }
 
         std::cout << std::endl;
         player = (player + 1) % 2;
+        colsTop[col]--;
     } while (turns++ <= 21 * 2); // Cada jugador dispone de 21 fichas.
 
     // TODO: Indicar que fue un empate.
+    if (!winner) {
+        std::cout << "¡¡¡EMPATE!!!" << std::endl;
+    }
 }
 
 void printPlayer(const int player) {
@@ -114,4 +126,40 @@ void printBoard(const int (&board)[rows][cols]) {
     }
     std::cout << std::endl
               << std::endl;
+}
+
+template <int rows, int cols>
+bool isWinner(const int player, const int row, const int col, const int (&board)[rows][cols]) {
+    // Revisa la fila
+    int startCol = std::max(0, col - 3);
+    int endCol = std::min(cols - 1, col + 3);
+
+    for (int i = startCol; i <= endCol; i++) {
+        int count = 0;
+        for (int j = 0; j < 4 && j <= endCol; j++) {
+            (board[row][i + j] == player) ? count++ : j = 4;
+        }
+        if (count == 4) {
+            return true;
+        }
+    }
+
+    // Revisa la columna
+    int startRow = std::max(0, row - 3);
+    int endRow = std::min(rows - 1, row + 3);
+    for (int i = startRow; i <= endRow; i++) {
+        int count = 0;
+        for (int j = 0; j < 4 && j <= endRow; j++) {
+            (board[i + j][col] == player) ? count++ : j = 4;
+        }
+        if (count == 4) {
+            return true;
+        }
+    }
+
+    // Revisa diagonal 1
+
+    // Revisa diagonal 2
+
+    return false;
 }
