@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: Clean",
+            "command": "/bin/rm",
+            "args": ["-Rf", "${workspaceFolder}/bin/*"],
+            "problemMatcher": []
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: clang build active file",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-stdlib=libc++",
+                "-g",
+                "${workspaceFolder}/src/*.cpp",
+                "-o",
+                "${workspaceFolder}/bin/${workspaceFolderBasename}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
